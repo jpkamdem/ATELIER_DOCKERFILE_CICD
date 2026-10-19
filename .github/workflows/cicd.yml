@@ -24,7 +24,7 @@ jobs:
 
   building:
     runs-on: ubuntu-24.04
-    needs: Tests
+    needs: testing
     steps:
       - name: Récupérer le code du dépôt
         uses: actions/checkout@v4
