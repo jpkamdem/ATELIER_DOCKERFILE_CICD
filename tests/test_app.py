@@ -31,7 +31,7 @@ def test_page_accueil_liste_les_fonctions(client):
 def test_salutation_personnalisee(client):
     reponse = client.post("/sayhi", data={"name": "Alice"})
     assert reponse.status_code == 200
-    assert b"Hello Alice!" in reponse.data
+    assert b"Bonjour Alice!" in reponse.data
 
 
 def test_cookie_est_enregistre(client):
