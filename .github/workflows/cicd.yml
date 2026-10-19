@@ -27,10 +27,8 @@ jobs:
         with:
           python-version: 3.12
         
-      - name: Récupération des dépendances
-        uses: py-actions/py-dependency-install@v4
-        with:
-          path: "requirements.txt"
+      - name: Récupération du code
+        uses: actions/checkout@v4
 
       - name: Installation des dépendances
         run: |
