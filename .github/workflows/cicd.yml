@@ -48,7 +48,7 @@ jobs:
   # Pourquoi l'étape 3 et 4 ? Chaque job tourne sur une machine neuve :
   # l'image construite ici n'existe pas sur la machine du job 3.
   Docker:
-    runs-on: docker:29.9.1-dind
+    runs-on: ubuntu-latest
     needs: Tests
     steps:
       - name: Récupération du code
