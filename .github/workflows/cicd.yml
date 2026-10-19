@@ -85,7 +85,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./image.tar
+          path: .
       - name: Charger l'image dans Docker
         run: docker load -i image.tar
       - name: Démarrer le conteneur
