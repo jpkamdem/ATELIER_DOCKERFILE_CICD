@@ -26,10 +26,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-        
       - name: Récupération du code
         uses: actions/checkout@v4
-
       - name: Installation des dépendances
         run: |
           pip install -r requirements.txt pytest
@@ -50,10 +48,12 @@ jobs:
   # Pourquoi l'étape 3 et 4 ? Chaque job tourne sur une machine neuve :
   # l'image construite ici n'existe pas sur la machine du job 3.
   Docker:
-    runs-on: ubuntu-latest
+    runs-on: docker:29.9.1-dind
     needs: Tests
     steps:
-      - name: A compléter
+      - name: Récupération du code
+        uses: actions/checkout@v4
+      - name: Construction de l'artéfact
         run: |
           docker build -t atelier-flask .
           docker save atelier-flask -o image.tar
