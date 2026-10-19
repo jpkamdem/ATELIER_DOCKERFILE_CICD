@@ -91,6 +91,6 @@ jobs:
       - name: Démarrer le conteneur
         run: docker run -dp 4000:4000 $IMAGE_NAME
       - name: Vérifier que l'application répond
-        run: curl http://localhost:4000/
+        run: curl --fail --retry 10 --retry-delay 2 --retry-all-errors http://localhost:4000/
       - name: Afficher un message de succès dans le résumé du pipeline
         run: echo "..." >> $GITHUB_STEP_SUMMARY
