@@ -48,7 +48,7 @@ Vous pouvez d'abord lancer les tests sur votre poste :
 ✅ **Validé quand** : le job `Tests` est vert et affiche la liste des tests passés.
 
 🧪 **Expérience** : modifiez un test pour le faire échouer (par exemple, remplacez `"Hello Alice!"`
-par `"Bonjour Alice!"`) et poussez. Que se passe-t-il pour les jobs 2 et 3 ? Remettez le test en état ensuite.
+par `"Hello Alice!"`) et poussez. Que se passe-t-il pour les jobs 2 et 3 ? Remettez le test en état ensuite.
 
 ## Job 2 : construire l'image Docker
 

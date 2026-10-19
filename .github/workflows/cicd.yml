@@ -24,7 +24,8 @@ jobs:
     steps:
       - name: A compléter
         run: |
-          echo "Écrire ici les étapes de test de l'application"
+          pip install -r requirements.txt pytest
+          pytest -v tests/
 
   # ---------------------------------------------------------------
   # JOB 2 - Livraison continue : construire l'image Docker
@@ -46,7 +47,12 @@ jobs:
     steps:
       - name: A compléter
         run: |
-          echo "Écrire ici la construction de l'image Docker"
+          docker build -t atelier-flask .
+          docker save atelier-flask -o image.tar
+      - name: Transferer vers prochain job
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./image.tar
 
   # ---------------------------------------------------------------
   # JOB 3 - Déploiement continu : simulation de mise en production
