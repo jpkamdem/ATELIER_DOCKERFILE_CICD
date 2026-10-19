@@ -22,7 +22,17 @@ jobs:
   Tests:
     runs-on: ubuntu-latest
     steps:
-      - name: A compléter
+      - name: Mise en place de python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+        
+      - name: Récupération des dépendances
+        uses: py-actions/py-dependency-install@v4
+        with:
+          path: "requirements.txt"
+
+      - name: Installation des dépendances
         run: |
           pip install -r requirements.txt pytest
           pytest -v tests/
