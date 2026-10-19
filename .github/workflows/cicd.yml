@@ -8,18 +8,7 @@ env:
   IMAGE_NAME: atelier-flask
 
 jobs:
-  # ---------------------------------------------------------------
-  # JOB 1 - Intégration continue : tester l'application
-  # ---------------------------------------------------------------
-  # Objectif : à chaque push, l'application doit être testée.
-  # Si un test échoue, le pipeline doit s'arrêter ici.
-  #
-  # Étapes à écrire :
-  #   1. Récupérer le code du dépôt       -> action actions/checkout@v4
-  #   2. Installer Python 3.12            -> action actions/setup-python@v5
-  #   3. Installer les dépendances        -> pip install -r requirements.txt  (+ pytest)
-  #   4. Lancer les tests                 -> pytest -v tests/
-  Tests:
+  testing:
     runs-on: ubuntu-24.04
     steps:
       - name: Récupérer le code du dépôt
@@ -33,21 +22,7 @@ jobs:
       - name: Lancer les tests
         run: pytest -v tests/
 
-  # ---------------------------------------------------------------
-  # JOB 2 - Livraison continue : construire l'image Docker
-  # ---------------------------------------------------------------
-  # Objectif : si les tests passent, construire l'image Docker de
-  # l'application (pensez à compléter le fichier Dockerfile !).
-  #
-  # Étapes à écrire :
-  #   1. Récupérer le code du dépôt
-  #   2. Construire l'image                -> docker build -t $IMAGE_NAME:${{ github.sha }} .
-  #   3. Exporter l'image dans un fichier  -> docker save ... -o image.tar
-  #   4. Transmettre le fichier au job 3   -> action actions/upload-artifact@v4
-  #
-  # Pourquoi l'étape 3 et 4 ? Chaque job tourne sur une machine neuve :
-  # l'image construite ici n'existe pas sur la machine du job 3.
-  Docker:
+  building:
     runs-on: ubuntu-24.04
     needs: Tests
     steps:
@@ -63,22 +38,9 @@ jobs:
           name: build-artifact
           path: .
 
-  # ---------------------------------------------------------------
-  # JOB 3 - Déploiement continu : simulation de mise en production
-  # ---------------------------------------------------------------
-  # Objectif : "déployer" l'image et vérifier que l'application répond.
-  #
-  # Étapes à écrire :
-  #   1. Récupérer l'image du job 2        -> action actions/download-artifact@v4
-  #   2. Charger l'image dans Docker       -> docker load -i image.tar
-  #   3. Démarrer le conteneur             -> docker run -d -p 4000:4000 ...
-  #   4. Vérifier que l'application répond -> curl http://localhost:4000/
-  #      (attention : l'application met quelques secondes à démarrer)
-  #   5. Afficher un message de succès dans le résumé du pipeline
-  #      -> echo "..." >> $GITHUB_STEP_SUMMARY
-  Production:
+  deployment:
     runs-on: ubuntu-24.04
-    needs: Docker
+    needs: building
     environment: production
     steps:
       - name: Récupérer l'image du job 2
