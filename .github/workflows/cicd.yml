@@ -20,18 +20,18 @@ jobs:
   #   3. Installer les dépendances        -> pip install -r requirements.txt  (+ pytest)
   #   4. Lancer les tests                 -> pytest -v tests/
   Tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Mise en place de python
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+      - name: Installer Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Récupération du code
-        uses: actions/checkout@v4
       - name: Installation des dépendances
-        run: |
-          pip install -r requirements.txt pytest
-          pytest -v tests/
+        run: pip install -r requirements.txt pytest
+      - name: Lancer les tests
+        run: pytest -v tests/
 
   # ---------------------------------------------------------------
   # JOB 2 - Livraison continue : construire l'image Docker
@@ -48,18 +48,19 @@ jobs:
   # Pourquoi l'étape 3 et 4 ? Chaque job tourne sur une machine neuve :
   # l'image construite ici n'existe pas sur la machine du job 3.
   Docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: Tests
     steps:
-      - name: Récupération du code
+      - name: Récupérer le code du dépôt
         uses: actions/checkout@v4
-      - name: Construction de l'artéfact
-        run: |
-          docker build -t atelier-flask .
-          docker save atelier-flask -o image.tar
+      - name: Construire l'image
+        run: docker build -t $IMAGE_NAME .
+      - name: Exporter l'image dans un fichier
+        run: docker save $IMAGE_NAME -o image.tar
       - name: Transferer vers prochain job
         uses: actions/upload-artifact@v4
         with:
+          name: build-artifact
           path: ./image.tar
 
   # ---------------------------------------------------------------
@@ -76,10 +77,20 @@ jobs:
   #   5. Afficher un message de succès dans le résumé du pipeline
   #      -> echo "..." >> $GITHUB_STEP_SUMMARY
   Production:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: Docker
     environment: production
     steps:
-      - name: A compléter
-        run: |
-          echo "Écrire ici la simulation de mise en production"
+      - name: Récupérer l'image du job 2
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: ./image.tar
+      - name: Charger l'image dans Docker
+        run: docker load -i image.tar
+      - name: Démarrer le conteneur
+        run: docker run -dp 4000:4000 $IMAGE_NAME
+      - name: Vérifier que l'application répond
+        run: curl http://localhost:4000/
+      - name: Afficher un message de succès dans le résumé du pipeline
+        run: echo "..." >> $GITHUB_STEP_SUMMARY
